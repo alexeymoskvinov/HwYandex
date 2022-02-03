@@ -1,0 +1,6 @@
+-- CREATE TABLE IF NOT EXISTS "users_information"
+-- (
+--     id   varchar(255),
+--     name varchar(255),
+--     time varchar(255)
+-- )

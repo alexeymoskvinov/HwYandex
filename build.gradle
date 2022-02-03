@@ -1,0 +1,98 @@
+group "com.yandex"
+
+apply plugin: "idea"
+apply plugin: "java"
+
+compileJava {
+    sourceCompatibility "11"
+    targetCompatibility "11"
+    options.encoding "UTF-8"
+}
+
+compileTestJava {
+    sourceCompatibility "11"
+    targetCompatibility "11"
+    options.encoding "UTF-8"
+}
+
+repositories {
+    mavenCentral()
+}
+
+def springBootVersion = "2.5.5"
+//def log4jVersion = "2.14.1"
+def apacheHttpVersion = "4.5.13"
+def gsonVersion = "2.8.8"
+def testcontainersVersion = '1.16.0'
+def junitVersion = '5.8.1'
+
+dependencies {
+    implementation ("org.springframework.boot:spring-boot-starter-web:$springBootVersion") {
+        exclude module: "spring-boot-starter-logging"
+    }
+
+    implementation "org.apache.httpcomponents:httpclient:$apacheHttpVersion"
+    implementation "com.google.code.gson:gson:$gsonVersion"
+
+    testImplementation "org.testcontainers:postgresql:$testcontainersVersion"
+    testImplementation "org.testcontainers:testcontainers:$testcontainersVersion"
+    testImplementation "org.testcontainers:junit-jupiter:$testcontainersVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation:2.5.5'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.5.5'
+    implementation 'org.liquibase:liquibase-core:4.4.3'
+    implementation 'com.opencsv:opencsv:5.5.2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.5.5'
+    implementation 'org.liquibase:liquibase-maven-plugin:4.4.3'
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    runtimeOnly 'org.postgresql:postgresql:42.2.24.jre7'
+    implementation "org.apache.httpcomponents:httpclient:$apacheHttpVersion"
+    implementation "com.google.code.gson:gson:$gsonVersion"
+
+    // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
+
+
+    testImplementation "org.testcontainers:postgresql:$testcontainersVersion"
+    testImplementation "org.testcontainers:testcontainers:$testcontainersVersion"
+    testImplementation "org.testcontainers:junit-jupiter:$testcontainersVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+
+}
+
+//configurations {
+//    all {
+//        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+//    }
+//}
+
+//wrapper { gradleVersion = '6.7' }
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        afterSuite { desc, result ->
+            if (!desc.parent) { // will match the outermost suite
+                println "Test results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+            }
+        }
+    }
+}
+
+task copyDepsToBuildDir(type: Copy) {
+    into "${buildDir}/libs"
+    from configurations.runtimeClasspath
+}
+
+jar {
+    baseName 'messenger'
+}
+
+jar.dependsOn copyDepsToBuildDir
